@@ -1,20 +1,20 @@
 # FFC-Dataset-10k
 
-This repository contains the dataset and reproducibility resources for the paper:
+Reproducibility resources for the paper:
 
 **A Comparative Evaluation of Pretrained Face Embedding Models for Face Verification**
 
 ## Overview
 
-FFC-Dataset-10k is a face image dataset created for the evaluation of pretrained face embedding models in face verification tasks.
+FFC-Dataset-10k is a face image dataset constructed for the evaluation of pretrained face embedding models in face verification.
 
-The dataset contains **10,000 images from 5,000 identities**, constructed from images originating from seven publicly available face datasets.
+The dataset contains **10,000 images from 5,000 identities**, with two images associated with each identity. The images were selected from seven publicly available face datasets.
 
-The dataset was used to benchmark eleven pretrained face embedding models under a standardized evaluation pipeline.
+The dataset was used to evaluate multiple pretrained face embedding models under a standardized face verification protocol.
 
 ## Source Datasets
 
-FFC-Dataset-10k was constructed using images from the following datasets:
+The FFC-Dataset-10k was constructed using images from the following datasets:
 
 * Selfies-and-Videos
 * Selfies-and-ID
@@ -24,9 +24,57 @@ FFC-Dataset-10k was constructed using images from the following datasets:
 * MORPH-2
 * BUPT-CBFace-12
 
-## Evaluated Models
+The file [`selected_images.csv`](selected_images.csv) provides the list of images selected for the FFC-Dataset-10k and their corresponding source dataset.
 
-The following pretrained face embedding models were evaluated:
+## Dataset Organization
+
+Each identity is represented by a separate folder containing two face images.
+
+The dataset follows the structure:
+
+```text
+FFC-Dataset-10k/
+├── CBFACE_0/
+│   ├── image_1
+│   └── image_2
+├── CBFACE_1/
+│   ├── image_1
+│   └── image_2
+├── ...
+├── FACESCRUB_0/
+│   ├── image_1
+│   └── image_2
+└── ...
+```
+
+The naming convention identifies the source dataset and the corresponding identity.
+
+## Evaluation Pipeline
+
+The accompanying notebook [`ArcFace-embeddings-v4.ipynb`](ArcFace-embeddings-v4.ipynb) provides an example of the evaluation pipeline used with the ArcFace model.
+
+The general evaluation procedure consists of:
+
+1. Resizing images while preserving their aspect ratio, with a maximum dimension of 640 pixels.
+2. Face detection and alignment.
+3. Face embedding extraction.
+4. L2 normalization of the embeddings.
+5. Face verification using cosine distance.
+6. Evaluation using ROC-AUC, Equal Error Rate (EER), Precision, Recall, and F1-score.
+
+The complete study evaluated eleven pretrained face embedding models through the DeepFace framework.
+
+## Experimental Evaluation
+
+The experiments were conducted using:
+
+* **5 folds**
+* **1,000 images**
+* **2,500 images**
+* **5,000 images**
+* **10,000 images**
+
+The evaluated models were:
 
 * VGG-Face
 * FaceNet
@@ -40,48 +88,29 @@ The following pretrained face embedding models were evaluated:
 * GhostFaceNet
 * Buffalo_L
 
-All models were accessed through the DeepFace framework.
-
-## Experimental Protocol
-
-The evaluation pipeline consists of the following main steps:
-
-1. Image resizing while preserving the original aspect ratio, with a maximum dimension of 640 pixels.
-2. Face detection and alignment.
-3. Face embedding extraction.
-4. L2 normalization of the resulting embeddings.
-5. Face verification using cosine distance.
-6. Evaluation using ROC-AUC, Equal Error Rate (EER), Precision, Recall, and F1-score.
-
-The experiments were conducted using five folds and four dataset sizes:
-
-* 1,000 images
-* 2,500 images
-* 5,000 images
-* 10,000 images
-
-## Repository Structure
-
-```text
-FFC-Dataset-10k/
-├── README.md
-├── dataset/
-├── notebooks/
-└── results/
-```
-
-Additional files will be added to this repository as part of the reproducibility resources for the study.
-
 ## Reproducibility
 
-The repository will contain the resources necessary to reproduce the dataset construction and evaluation experiments described in the paper, including the experimental notebook and information about the images selected from the source datasets.
+This repository provides the dataset selection information and an example evaluation notebook to facilitate reproduction and further experimentation.
+
+The `selected_images.csv` file identifies the images used to construct the FFC-Dataset-10k from the source datasets.
+
+The notebook demonstrates the embedding extraction and evaluation procedure for ArcFace. The same general experimental protocol was applied to the other models evaluated in the study.
+
+## Dataset Availability
+
+The images in FFC-Dataset-10k originate from publicly available datasets. Users should consult the terms and licenses of the respective source datasets before redistributing or reusing the images.
+
+This repository currently provides the selection information rather than redistributing the complete collection of source images.
 
 ## Citation
 
-If you use this dataset or the associated evaluation pipeline, please cite the following paper:
+If you use the FFC-Dataset-10k or the evaluation resources provided in this repository, please cite:
 
 **A Comparative Evaluation of Pretrained Face Embedding Models for Face Verification**
 
-## License
+## Repository
 
-The licensing and redistribution conditions of the original source datasets apply to the corresponding data included in this repository.
+This repository contains the reproducibility resources associated with the study:
+
+* `selected_images.csv` — list of selected images and their source datasets.
+* `ArcFace-embeddings-v4.ipynb` — example ArcFace embedding ex
