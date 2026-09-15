@@ -92,7 +92,8 @@ The evaluated models were:
 
 This repository provides the dataset selection information and an example evaluation notebook to facilitate reproduction and further experimentation.
 
-The `selected_images.csv` file identifies the images used to construct the FFC-Dataset-10k from the source datasets.
+The file [`selected_images.csv`](https://github.com/CEIA-NoLeakIV/FFC-Dataset-10k/blob/main/selected_images.csv) provides the list of images selected to construct the FFC-Dataset-10k, together with their corresponding source datasets. This file is provided to facilitate the reproducibility of the dataset construction process.
+
 
 The notebook demonstrates the embedding extraction and evaluation procedure for ArcFace. The same general experimental protocol was applied to the other models evaluated in the study.
 
