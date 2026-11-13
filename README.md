@@ -1,117 +1,92 @@
-# FFC-Dataset-10k
+# FFC-10k | Face Verification Benchmark
 
-Reproducibility resources for the paper:
+**SIBGRAPI 2026 · Workshop of Undergraduate Works (WUW)**  
+*A Comparative Evaluation of Pretrained Face Embedding Models for Face Verification*
 
-**A Comparative Evaluation of Pretrained Face Embedding Models for Face Verification**
+A research benchmark of **11 pretrained face-embedding models** evaluated under a standardized face verification protocol. This repository contains **dataset selection metadata**, an **ArcFace evaluation notebook**, and the **published-study results in both readable and CSV formats**.
 
-## Overview
+> **Scope:** This repository shares a **partial reproducibility example**, not a fully automated 11-model benchmark. The original image datasets and model weights are not redistributed. The numerical results are transcribed from the research manuscript, not newly rerun here.
 
-FFC-Dataset-10k is a face image dataset constructed for the evaluation of pretrained face embedding models in face verification.
+## At a glance
 
-The dataset contains **10,000 images from 5,000 identities**, with two images associated with each identity. The images were selected from seven publicly available face datasets.
+| Research dataset | Pretrained models | Data sizes | Repetitions |
+| :---: | :---: | :---: | :---: |
+| **10,000 images / 5,000 identities** | **11** | **1k, 2.5k, 5k, 10k images** | **5 folds** |
 
-The dataset was used to evaluate multiple pretrained face embedding models under a standardized face verification protocol.
+**Key findings on the 10,000-image subset:**
 
-## Source Datasets
+| Model | ROC-AUC ↑ | EER ↓ | F1 ↑ | Extraction time (10k) |
+| :--- | ---: | ---: | ---: | ---: |
+| **ArcFace** | 0.9978 | 1.34% | **0.8170** | 46m 19s |
+| **FaceNet512** | **0.9980** | **1.03%** | 0.7958 | 57m 45s |
+| **FaceNet** | **0.9980** | 1.60% | 0.7958 | 53m 25s |
 
-The FFC-Dataset-10k was constructed using images from the following datasets:
+**ArcFace** had the highest F1-score in the full comparison; **FaceNet512** had the lowest EER. Different metrics lead to different model choices. Timings represent **sequential embedding extraction on a laptop RTX 4050**, not production-level latency.
 
-* Selfies-and-Videos
-* Selfies-and-ID
-* Pins-Face
-* FEI-Face
-* FaceScrub
-* MORPH-2
-* BUPT-CBFace-12
+📊 **[Explore the complete 11-model results](BENCHMARK_RESULTS.md)** · **[CSV results](benchmark_results_10k.csv)** · **[Reproducibility instructions](REPRODUCIBILITY.md)**
 
-The file [`selected_images.csv`](selected_images.csv) provides the list of images selected for the FFC-Dataset-10k and their corresponding source dataset.
+## Face verification pipeline
 
-## Dataset Organization
-
-Each identity is represented by a separate folder containing two face images.
-
-The dataset follows the structure:
-
-```text
-FFC-Dataset-10k/
-├── CBFACE_0/
-│   ├── image_1
-│   └── image_2
-├── CBFACE_1/
-│   ├── image_1
-│   └── image_2
-├── ...
-├── FACESCRUB_0/
-│   ├── image_1
-│   └── image_2
-└── ...
+```mermaid
+flowchart LR
+    A["FFC-10k: image IDs and labels"] --> B["Resize to max 640 px width"]
+    B --> C["RetinaFace: detection + alignment"]
+    C --> D["DeepFace: pretrained embedding model"]
+    D --> E["Feature embeddings"]
+    E --> F["Genuine and impostor pairs"]
+    F --> G["Cosine distance"]
+    G --> H["ROC-AUC / EER / Precision / Recall / F1"]
 ```
 
-The naming convention identifies the source dataset and the corresponding identity.
+**Experimental design:**
+1. **Build FFC-10k:** curate two images for each of 5,000 identities, combining selections from seven public datasets.
+2. **Preprocess uniformly:** resize while preserving aspect ratio; apply RetinaFace detection and alignment.
+3. **Extract embeddings:** compare 11 pretrained face recognition models through a common pipeline.
+4. **Verify identities:** generate genuine and impostor pairs and compute cosine distances.
+5. **Evaluate:** ROC-AUC, EER, precision, recall, and F1; compare four subset sizes with five repeated folds.
+6. **Assess computational costs:** embedding dimensionality and sequential extraction time on a fixed hardware setup.
 
-## Evaluation Pipeline
+### Evaluated models
 
-The accompanying notebook [`ArcFace-embeddings-v4.ipynb`](ArcFace-embeddings-v4.ipynb) provides an example of the evaluation pipeline used with the ArcFace model.
+VGG-Face · FaceNet · FaceNet512 · OpenFace · DeepFace · DeepID · ArcFace · Dlib · SFace · GhostFaceNet · Buffalo L
 
-The general evaluation procedure consists of:
+## Repository files
 
-1. Resizing images while preserving their aspect ratio, with a maximum dimension of 640 pixels.
-2. Face detection and alignment.
-3. Face embedding extraction.
-4. L2 normalization of the embeddings.
-5. Face verification using cosine distance.
-6. Evaluation using ROC-AUC, Equal Error Rate (EER), Precision, Recall, and F1-score.
+| Resource | What you get |
+| :--- | :--- |
+| [`ArcFace-embeddings-v4.ipynb`](ArcFace-embeddings-v4.ipynb) | Public **ArcFace example notebook**, not every model |
+| [`selected_images.csv`](selected_images.csv) | Source selection and identity-mapping metadata |
+| [`BENCHMARK_RESULTS.md`](BENCHMARK_RESULTS.md) | Full reported results, interpretation, provenance, and caveats |
+| [`benchmark_results_10k.csv`](benchmark_results_10k.csv) | Machine-readable 11-model comparison |
+| [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md) | Data preparation, notebook execution guidance, and limitations |
 
-The complete study evaluated eleven pretrained face embedding models through the DeepFace framework.
+## About the dataset
 
-## Experimental Evaluation
+**FFC-10k (Frontal Face Composition Dataset)** has **10,000 images of 5,000 identities** (two images per identity). The images were selected from:
 
-The experiments were conducted using:
+- Selfies-and-Videos
+- Selfies-and-ID
+- Pins-Face
+- FEI-Face
+- FaceScrub
+- MORPH-2
+- BUPT-CBFace-12
 
-* **5 folds**
-* **1,000 images**
-* **2,500 images**
-* **5,000 images**
-* **10,000 images**
+The [institutional dataset construction guide](https://github.com/CEIA-NoLeakIV/FFC-Dataset-10k) provides the sourcing, folder structure, and construction methodology. This personal research repository **does not redistribute image files**. Users must obtain source data from its owners, subject to their permissions and terms.
 
-The evaluated models were:
+## Research outcomes & limitations
 
-* VGG-Face
-* FaceNet
-* FaceNet512
-* OpenFace
-* DeepFace
-* DeepID
-* ArcFace
-* Dlib
-* SFace
-* GhostFaceNet
-* Buffalo_L
+- Performance and computation can differ substantially between pretrained models, even when embedding sizes are identical.
+- There is **no universally best model on every metric**: ArcFace achieved the highest F1-score (0.8170), while FaceNet512 had the lowest reported EER (1.03%).
+- Low scores for some models may be affected by library integration, normalization, and preprocessing choices; the study did not isolate these factors.
+- Absolute F1/precision and decision thresholds depend on the pair-generation protocol and should not be generalized to real-world deployment without additional evaluation.
+- The reported benchmark is **separate** from the CEIA team's submitted algorithm in **NIST FRTE 1:1**; the numbers shown here are **not** NIST assessment scores.
 
-## Reproducibility
+## Research attribution
 
-This repository provides the dataset selection information and an example evaluation notebook to facilitate reproduction and further experimentation.
+**“A Comparative Evaluation of Pretrained Face Embedding Models for Face Verification”**  
+João Gabriel Gralha and collaborators · **SIBGRAPI 2026, Workshop of Undergraduate Works (WUW)**.
 
-The file [`selected_images.csv`](https://github.com/CEIA-NoLeakIV/FFC-Dataset-10k/blob/main/selected_images.csv) provides the list of images selected to construct the FFC-Dataset-10k, together with their corresponding source datasets. This file is provided to facilitate the reproducibility of the dataset construction process.
+The study and associated dataset resources were developed as collaborative research related to the **CEIA-UFG / NoLeak IV** project. [Institutional repository](https://github.com/CEIA-NoLeakIV/FFC-Dataset-10k).
 
-
-The notebook demonstrates the embedding extraction and evaluation procedure for ArcFace. The same general experimental protocol was applied to the other models evaluated in the study.
-
-## Dataset Availability
-
-The images in FFC-Dataset-10k originate from publicly available datasets. Users should consult the terms and licenses of the respective source datasets before redistributing or reusing the images.
-
-This repository currently provides the selection information rather than redistributing the complete collection of source images.
-
-## Citation
-
-If you use the FFC-Dataset-10k or the evaluation resources provided in this repository, please cite:
-
-**A Comparative Evaluation of Pretrained Face Embedding Models for Face Verification**
-
-## Repository
-
-This repository contains the reproducibility resources associated with the study:
-
-* `selected_images.csv` — list of selected images and their source datasets.
-* `ArcFace-embeddings-v4.ipynb` — example ArcFace embedding ex
+For technical documentation and the provenance of reported values, see [BENCHMARK_RESULTS.md](BENCHMARK_RESULTS.md). This repository does not imply authorization to redistribute third-party data or weights.
